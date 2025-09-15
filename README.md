@@ -1,0 +1,157 @@
+//show all db
+SELECT name FROM sys.databases;
+
+//show tables
+use db_name;
+
+//create new table
+CREATE TABLE db.table_name (
+    VarX VARCHAR(10) NOT NULL,
+    Correlation DECIMAL(4, 3) NULL
+    );
+
+//populate table
+INSERT INTO db.table_name
+VALUES ('Var1', 0.2),
+    ('Var2', 0.825),
+    ('Var3', 0.61);
+
+//define a var VarX
+DECLARE @VarX DECIMAL(4, 3) = 0.59;
+DECLARE @a INT = 45, @b INT = 40;
+
+
+//using IIF
+DECLARE @a INT = 45, @b INT = 40;
+SELECT [Result] = IIF( @a > @b, 'TRUE', 'FALSE' );
+
+
+
+
+//built-in functions. always use the SELECT statement b4 calling a function
+LEN(str) -returns the number of characters in a given string expression or column
+DATALENGTH(str) -returns the size in bytes for a given string expression or column.
+
+	//string manipulation
+	REVERSE ( string_expression or col_name)
+	SELECT STR(123.45)  -returns char str
+
+	//math functions
+	POWER(2, 3) //returns 2^3
+	FLOOR(), CEILING(); -round down, round up
+
+	//convert functions
+	CAST(123.45 AS INT); -- Returns 123
+        CONVERT(INT, 67.89); -- Returns 67
+	PARSE('€345,98' AS money USING 'de-DE') AS new_col_name
+	SELECT PARSE('Monday, 13 December 2010' AS datetime USING 'en-US')
+
+
+
+//create function
+CREATE FUNCTION db.func_name(@arg1 INT, @arg2 INT)
+RETURNS INT
+AS
+BEGIN
+	RETURN @arg1 + @arg2;
+END;
+
+
+
+//Example: selects the number of characters and the data in FirstName for people located in Australia
+use db_name
+SELECT firstname, LEN(firstname) AS len_fn
+FROM db_name.table_name
+WHERE country='Australia';
+
+
+
+//query by date range
+WHERE DateColumn >= 'YYYY-MM-DD' AND DateColumn < 'YYYY-MM-DD';
+
+
+
+
+//read sql query into a df
+df=pd.read_sql(query, con) 
+
+
+
+pip install sqlalchemy pyodbc
+from sqlalchemy import create_engine
+
+
+
+************for Microsoft SQL Server*************
+
+
+//base url conn. string
+dialect+driver://username:password@host:port/database
+
+
+from sqlalchemy import create_engine
+
+# pyodbc
+engine = create_engine("mssql+pyodbc://scott:tiger@mydsn")
+
+# pymssql
+engine = create_engine("mssql+pymssql://scott:tiger@hostname:port/dbname")
+
+from sqlalchemy import text
+
+with engine.connect() as connection:
+    result = connection.execute(text(query))
+    for i in result:
+        print("col_name:", i.col_name)
+
+
+
+
+OR
+
+
+
+
+
+import urllib.parse
+server = 'your_server_name'
+database = 'your_database_name'
+username = 'your_username'
+password = 'your_password'
+driver = 'ODBC Driver 17 for SQL Server'
+
+quoted_driver = urllib.parse.quote_plus(driver)
+
+connection_string = f"mssql+pyodbc://{username}:{password}@{server}/{database}?driver={quoted_driver}"
+
+
+engine = create_engine(connection_string)
+
+query = 'SELECT * FROM my_table'
+
+
+try:
+	with engine.connect() as con:
+		df=pd.read_sql(query, con)
+		#print(df) 
+except Exception as e:
+        print(f"Error connecting to database: {e}")
+
+
+
+
+
+
+
+
+OR
+
+
+
+try:
+        with engine.connect() as connection:
+            # You can now execute SQL queries or interact with the database
+            result = connection.execute(query).fetchone()
+            print(f"Current date from SQL Server: {result[0]}")
+    except Exception as e:
+        print(f"Error connecting to database: {e}")
